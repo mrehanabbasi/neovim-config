@@ -68,8 +68,25 @@ return {
       },
       -- lazy-load schemastore when needed
       on_new_config = function(new_config)
-        new_config.settings.yaml.schemas =
-          vim.tbl_deep_extend("force", new_config.settings.yaml.schemas or {}, require("schemastore").yaml.schemas())
+        local crd_schemas = {
+          ["https://raw.githubusercontent.com/external-secrets/external-secrets/main/config/crds/bases/external-secrets.io_externalsecrets.yaml"] = {
+            "**/externalsecret*.yaml",
+          },
+          ["https://raw.githubusercontent.com/external-secrets/external-secrets/main/config/crds/bases/external-secrets.io_secretstores.yaml"] = {
+            "**/secretstore*.yaml",
+          },
+          ["https://raw.githubusercontent.com/istio/istio/master/manifests/charts/base/files/crd-all.gen.yaml"] = {
+            "**/virtualservice*.yaml",
+          },
+        }
+
+        -- Ensure schemas table exists before merging
+        new_config.settings.yaml.schemas = vim.tbl_deep_extend(
+          "force",
+          new_config.settings.yaml.schemas or {},
+          require("schemastore").yaml.schemas(),
+          crd_schemas
+        )
       end,
       settings = {
         redhat = { telemetry = { enabled = false } },
@@ -84,7 +101,7 @@ return {
             -- schemas from SchemaStore.nvim plugin
             enable = false,
             -- Avoid TypeError: Cannot read properties of undefined (reading 'length')
-            url = "",
+            -- url = "",
           },
         },
       },
@@ -128,5 +145,15 @@ return {
         client.server_capabilities.documentFormattingProvider = true
       end, "yamlls")
     end
+  end,
+
+  helm_ls = function(_, opts)
+    opts.settings = {
+      schemas = vim.tbl_deep_extend("force", opts.settings.schemas or {}, {
+        ["https://raw.githubusercontent.com/external-secrets/external-secrets/main/config/crds/bases/external-secrets.io_externalsecrets.yaml"] = "**/externalsecret*.yaml",
+        ["https://raw.githubusercontent.com/external-secrets/external-secrets/main/config/crds/bases/external-secrets.io_secretstores.yaml"] = "**/secretstore*.yaml",
+        ["https://raw.githubusercontent.com/istio/istio/master/manifests/charts/base/files/crd-all.gen.yaml"] = "**/virtualservice*.yaml",
+      }),
+    }
   end,
 }

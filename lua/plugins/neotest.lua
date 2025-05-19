@@ -1,7 +1,6 @@
 return {
   {
     "nvim-neotest/neotest",
-    ft = { "go" },
     event = "VeryLazy",
     dependencies = {
       "nvim-neotest/nvim-nio",
@@ -11,7 +10,6 @@ return {
     opts = {
       adapters = {
         ["neotest-golang"] = {
-          -- Here we can set options for neotest-golang, e.g.
           go_test_args = { "-v", "-race", "-count=1" },
           dap_go_enabled = true, -- requires leoluz/nvim-dap-go
         },

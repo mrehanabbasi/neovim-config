@@ -1,10 +1,10 @@
-local none_ls = require("none-ls")
+local null_ls = require("null-ls")
 
 local goimports_reviser = {
   name = "goimports-reviser",
-  method = none_ls.methods.FORMATTING,
+  method = null_ls.methods.FORMATTING,
   filetypes = { "go" },
-  generator = none_ls.generator({
+  generator = null_ls.generator({
     command = "goimports-reviser",
     args = function(params)
       -- Start searching for go.mod from the file's directory
@@ -37,7 +37,7 @@ local goimports_reviser = {
   }),
 }
 
-none_ls.setup({
+null_ls.setup({
   sources = {
     goimports_reviser,
     -- (optional) chain stricter formatting

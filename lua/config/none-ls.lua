@@ -1,13 +1,14 @@
 local null_ls = require("null-ls")
+local helpers = require("null-ls.helpers")
 
-local goimports_reviser = {
+local goimports_reviser = helpers.make_builtin({
   name = "goimports-reviser",
   method = null_ls.methods.FORMATTING,
   filetypes = { "go" },
-  generator = null_ls.generator({
+  generator_opts = {
     command = "goimports-reviser",
     args = function(params)
-      -- Start searching for go.mod from the file's directory
+      -- find nearest go.mod
       local start_dir = vim.fs.dirname(params.bufname)
       local go_mod_path = vim.fs.find("go.mod", {
         upward = true,
@@ -26,21 +27,27 @@ local goimports_reviser = {
       end
 
       return {
+        "-output",
+        "stdout", -- print to stdout for none-ls to capture
         "-project-name",
         module_name or "",
-        "-set-alias", -- optional: keep aliases grouped
+        "-imports-order",
+        "std,project,general,company",
+        "-rm-unused",
+        "-excludes",
+        "vendor/",
         "-format",
         params.bufname,
       }
     end,
-    to_stdin = false, -- goimports-reviser only works with filenames
-  }),
-}
+    to_stdin = true,
+  },
+  factory = helpers.formatter_factory,
+})
 
 null_ls.setup({
   sources = {
+    -- null_ls.builtins.formatting.gofumpt,
     goimports_reviser,
-    -- (optional) chain stricter formatting
-    -- none_ls.builtins.formatting.gofumpt,
   },
 })

@@ -37,7 +37,7 @@ local goimports_reviser = helpers.make_builtin({
         "-excludes",
         "vendor/",
         "-format",
-        params.bufname,
+        "-", -- read from stdin
       }
     end,
     to_stdin = true,
@@ -48,6 +48,7 @@ local goimports_reviser = helpers.make_builtin({
 null_ls.setup({
   sources = {
     -- null_ls.builtins.formatting.gofumpt,
+    null_ls.builtins.formatting.gofmt,
     goimports_reviser,
   },
 })

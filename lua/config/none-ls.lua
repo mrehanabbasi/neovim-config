@@ -47,8 +47,8 @@ local goimports_reviser = helpers.make_builtin({
 
 null_ls.setup({
   sources = {
-    -- null_ls.builtins.formatting.gofumpt,
-    null_ls.builtins.formatting.gofmt,
+    null_ls.builtins.formatting.gofumpt,
+    -- null_ls.builtins.formatting.gofmt,
     goimports_reviser,
   },
 })

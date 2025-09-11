@@ -4,13 +4,14 @@ return {
     -- css = { "prettier" },
     -- html = { "prettier" },
 
-    go = {
-      -- "golines",
-      -- "gofmt",
-      -- "gofumpt",
-      "goimports",
-      -- "goimports-reviser"
-    },
+    go = {},
+    -- go = {
+    --   -- "golines",
+    --   -- "gofmt",
+    --   -- "gofumpt",
+    --   "goimports",
+    --   -- "goimports-reviser"
+    -- },
 
     nix = { "nixfmt" },
   },

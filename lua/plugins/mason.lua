@@ -1,12 +1,12 @@
 return {
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     enabled = function()
       return vim.fn.filereadable("/etc/NIXOS") == 0
     end,
   },
   {
-    "williamboman/mason-lspconfig.nvim",
+    "mason-org/mason-lspconfig.nvim",
     enabled = function()
       return vim.fn.filereadable("/etc/NIXOS") == 0
     end,

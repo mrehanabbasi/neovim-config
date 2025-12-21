@@ -117,11 +117,11 @@ return {
     gopls = function(_, opts)
       -- workaround for gopls not supporting semanticTokensProvider
       -- https://github.com/golang/go/issues/54531#issuecomment-1464982242
-      LazyVim.lsp.on_attach(function(client, _)
+      Snacks.util.lsp.on({ name = "gopls" }, function(_, client)
         if not client.server_capabilities.semanticTokensProvider then
           -- Ensure client.config.capabilities and textDocument are not nil
           local semantic = client.config.capabilities.textDocument
-            and client.config.capabilities.textDocument.semanticTokens
+              and client.config.capabilities.textDocument.semanticTokens
           if semantic then
             client.server_capabilities.semanticTokensProvider = {
               full = true,
@@ -133,7 +133,7 @@ return {
             }
           end
         end
-      end, "gopls")
+      end)
       -- end workaround
     end,
   },
@@ -141,18 +141,21 @@ return {
   yamlls = function()
     -- Neovim < 0.10 does not have dynamic registration for formatting
     if vim.fn.has("nvim-0.10") == 0 then
-      LazyVim.lsp.on_attach(function(client, _)
+      Snacks.util.lsp.on({ name = "yamlls" }, function(_, client)
         client.server_capabilities.documentFormattingProvider = true
-      end, "yamlls")
+      end)
     end
   end,
 
   helm_ls = function(_, opts)
     opts.settings = {
       schemas = vim.tbl_deep_extend("force", opts.settings.schemas or {}, {
-        ["https://raw.githubusercontent.com/external-secrets/external-secrets/main/config/crds/bases/external-secrets.io_externalsecrets.yaml"] = "**/externalsecret*.yaml",
-        ["https://raw.githubusercontent.com/external-secrets/external-secrets/main/config/crds/bases/external-secrets.io_secretstores.yaml"] = "**/secretstore*.yaml",
-        ["https://raw.githubusercontent.com/istio/istio/master/manifests/charts/base/files/crd-all.gen.yaml"] = "**/virtualservice*.yaml",
+        ["https://raw.githubusercontent.com/external-secrets/external-secrets/main/config/crds/bases/external-secrets.io_externalsecrets.yaml"] =
+        "**/externalsecret*.yaml",
+        ["https://raw.githubusercontent.com/external-secrets/external-secrets/main/config/crds/bases/external-secrets.io_secretstores.yaml"] =
+        "**/secretstore*.yaml",
+        ["https://raw.githubusercontent.com/istio/istio/master/manifests/charts/base/files/crd-all.gen.yaml"] =
+        "**/virtualservice*.yaml",
       }),
     }
   end,

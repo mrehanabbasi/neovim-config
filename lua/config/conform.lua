@@ -1,25 +1,47 @@
 return {
   formatters_by_ft = {
     lua = { "stylua" },
-    -- css = { "prettier" },
-    -- html = { "prettier" },
-
-    go = {},
-    -- go = {
-    --   -- "golines",
-    --   -- "gofmt",
-    --   -- "gofumpt",
-    --   "goimports",
-    --   -- "goimports-reviser"
-    -- },
-
+    go = { "gofumpt", "goimports-reviser" },
     nix = { "nixfmt" },
   },
 
-  -- Not required for LazyVim
-  -- format_on_save = {
-  -- These options will be passed to conform.format()
-  -- timeout_ms = 500,
-  -- lsp_fallback = true,
-  -- },
+  formatters = {
+    ["goimports-reviser"] = {
+      command = "goimports-reviser",
+      args = function(self, ctx)
+        -- Find nearest go.mod and extract module name
+        local go_mod_path = vim.fs.find("go.mod", {
+          upward = true,
+          path = ctx.dirname,
+          type = "file",
+        })[1]
+
+        local module_name = ""
+        if go_mod_path then
+          for line in io.lines(go_mod_path) do
+            local match = line:match("^module%s+(.+)")
+            if match then
+              module_name = match
+              break
+            end
+          end
+        end
+
+        return {
+          "-output",
+          "stdout",
+          "-project-name",
+          module_name,
+          "-imports-order",
+          "std,project,general,company",
+          "-rm-unused",
+          "-excludes",
+          "vendor/",
+          "-format",
+          "-", -- read from stdin
+        }
+      end,
+      stdin = true,
+    },
+  },
 }

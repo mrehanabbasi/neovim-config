@@ -136,27 +136,20 @@ return {
       end)
       -- end workaround
     end,
-  },
 
-  yamlls = function()
-    -- Neovim < 0.10 does not have dynamic registration for formatting
-    if vim.fn.has("nvim-0.10") == 0 then
-      Snacks.util.lsp.on({ name = "yamlls" }, function(_, client)
-        client.server_capabilities.documentFormattingProvider = true
-      end)
-    end
-  end,
 
-  helm_ls = function(_, opts)
-    opts.settings = {
-      schemas = vim.tbl_deep_extend("force", opts.settings.schemas or {}, {
+
+    helm_ls = function(_, opts)
+      opts.settings = opts.settings or {}
+      opts.settings.yamlls = opts.settings.yamlls or {}
+      opts.settings.yamlls.schemas = vim.tbl_deep_extend("force", opts.settings.yamlls.schemas or {}, {
         ["https://raw.githubusercontent.com/external-secrets/external-secrets/main/config/crds/bases/external-secrets.io_externalsecrets.yaml"] =
         "**/externalsecret*.yaml",
         ["https://raw.githubusercontent.com/external-secrets/external-secrets/main/config/crds/bases/external-secrets.io_secretstores.yaml"] =
         "**/secretstore*.yaml",
         ["https://raw.githubusercontent.com/istio/istio/master/manifests/charts/base/files/crd-all.gen.yaml"] =
         "**/virtualservice*.yaml",
-      }),
-    }
-  end,
+      })
+    end,
+  },
 }

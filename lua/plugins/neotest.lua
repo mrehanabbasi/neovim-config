@@ -1,13 +1,7 @@
+-- Extend LazyVim's neotest configuration with custom Go test args
 return {
   {
     "nvim-neotest/neotest",
-    event = "VeryLazy",
-    dependencies = {
-      "nvim-neotest/nvim-nio",
-      "nvim-lua/plenary.nvim",
-      "nvim-treesitter/nvim-treesitter",
-      "fredrikaverpil/neotest-golang",
-    },
     opts = {
       adapters = {
         ["neotest-golang"] = {
@@ -15,14 +9,6 @@ return {
           dap_go_enabled = true, -- requires leoluz/nvim-dap-go
         },
       },
-    },
-  },
-  {
-    "fredrikaverpil/neotest-golang",
-    ft = { "go" },
-    event = "VeryLazy",
-    dependencies = {
-      "leoluz/nvim-dap-go",
     },
   },
 }

@@ -1,47 +1,44 @@
+local function has_golangci_config(ctx)
+  local config_files = vim.fs.find({ ".golangci.yml", ".golangci.yaml" }, {
+    upward = true,
+    path = ctx.dirname,
+    type = "file",
+  })
+  return #config_files > 0
+end
+
 return {
   formatters_by_ft = {
     lua = { "stylua" },
-    go = { "gofumpt", "goimports-reviser" },
+    go = function(bufnr)
+      local ctx = { dirname = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":h") }
+      if has_golangci_config(ctx) then
+        return { "golangci_lint_fmt" }
+      end
+      return { "gofumpt", "goimports", "gci" }
+    end,
     nix = { "nixfmt" },
   },
 
   formatters = {
-    ["goimports-reviser"] = {
-      command = "goimports-reviser",
-      args = function(self, ctx)
-        -- Find nearest go.mod and extract module name
-        local go_mod_path = vim.fs.find("go.mod", {
-          upward = true,
-          path = ctx.dirname,
-          type = "file",
-        })[1]
-
-        local module_name = ""
-        if go_mod_path then
-          for line in io.lines(go_mod_path) do
-            local match = line:match("^module%s+(.+)")
-            if match then
-              module_name = match
-              break
-            end
-          end
-        end
-
-        return {
-          "-output",
-          "stdout",
-          "-project-name",
-          module_name,
-          "-imports-order",
-          "std,project,general,company",
-          "-rm-unused",
-          "-excludes",
-          "vendor/",
-          "-format",
-          "-", -- read from stdin
-        }
-      end,
+    golangci_lint_fmt = {
+      command = "golangci-lint",
+      args = { "fmt", "--stdin", "--stdin-filename", "$FILENAME" },
       stdin = true,
+    },
+    gci = {
+      command = "gci",
+      args = {
+        "write",
+        "--skip-generated",
+        "--custom-order",
+        "-s", "standard",
+        "-s", "localmodule",
+        "-s", "default",
+        "--",
+        "$FILENAME",
+      },
+      stdin = false,
     },
   },
 }
